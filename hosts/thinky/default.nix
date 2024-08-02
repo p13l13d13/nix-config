@@ -10,7 +10,7 @@
     ./hardware-configuration.nix
 
     ../common/global
-    ../common/users/p13l13d13
+    ../common/users/gulakov.nix
     ../common/optional/pipewire.nix
     ../common/optional/tlp.nix
     ../common/optional/docker.nix

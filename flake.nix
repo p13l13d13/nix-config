@@ -55,7 +55,7 @@
     homeConfigurations = {
       # Standalone HM only
       # Work laptop
-      "p13l13d13@thinky" = lib.homeManagerConfiguration {
+      "gulakov@thinky" = lib.homeManagerConfiguration {
         modules = [ ./home/thinky.nix ];
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {

@@ -81,13 +81,6 @@
     usbutils # lsusb
   ];
 
-  # basic configuration of git, please change to your own
-  programs.git = {
-    enable = true;
-    userName = "Ivan Gulakov";
-    userEmail = "gulakov@protonmail.com";
-  };
-
   # alacritty - a cross-platform, GPU-accelerated terminal emulator
   /* programs.alacritty = {
     enable = true;

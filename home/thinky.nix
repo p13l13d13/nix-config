@@ -15,7 +15,7 @@
   };
 
   home = {
-    username = lib.mkDefault "p13l13d13";
+    username = lib.mkDefault "gulakov";
     homeDirectory = lib.mkDefault "/home/${config.home.username}";
     stateVersion = lib.mkDefault "23.05";
   };
