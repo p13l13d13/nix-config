@@ -3,7 +3,8 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-    boot = {
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
     initrd = {
       availableKernelModules = [
         "nvme"
@@ -22,6 +23,20 @@
       };
       efi.canTouchEfiVariables = true;
     };
+    
+    tmp.cleanOnBoot = true;
+    consoleLogLevel = 3;
+    initrd.verbose = false;
+    kernelParams = [
+      "zswap.enabled=1"
+      "amd_pstate=active"
+      "mitigations=off"
+      "nowatchdog"
+      "nmi_watchdog=0"
+      "quiet"
+      "rd.systemd.show_status=auto"
+      "rd.udev.log_priority=3"
+    ];
   };
 
   fileSystems."/" =
@@ -44,7 +59,20 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  powerManagement.cpuFreqGovernor = "ondemand";
+  powerManagement.cpuFreqGovernor = "schedutil";
+  services.power-profiles-daemon.enable = false;
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_BAT = "conservative";
+      CPU_BOOST_ON_AC= "1";
+      CPU_BOOST_ON_BAT="0";
+    };
+  };
+  hardware.firmware = with pkgs; [ linux-firmware ];
+  hardware.ksm.enable = true;
+  hardware.bluetooth.enable = true;
+  hardware.usb-modeswitch.enable = true;
 
   hardware.graphics = {
      enable = true;

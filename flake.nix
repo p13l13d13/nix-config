@@ -3,13 +3,23 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";    
     systems.url = "github:nix-systems/default-linux";
     hardware.url = "github:nixos/nixos-hardware";
 
+    lix = {
+      url = "https://git.lix.systems/lix-project/lix/archive/main.tar.gz";
+      flake = false;
+    };
+
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.lix.follows = "lix";
+    };
+
     # home-manager, used for managing user configuration
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with
       # the `inputs.nixpkgs` of the current flake,
@@ -17,21 +27,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Third party programs, packaged with nix
-    firefox-addons = {
-      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nur.url = "github:nix-community/NUR";
     nix-gaming = {
       url = "github:fufexan/nix-gaming";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, systems, ... }@inputs: let
+  outputs = { self, nixpkgs, nur, home-manager, systems, lix-module, lix, ... }@inputs: let
     inherit (self) outputs;
     lib = nixpkgs.lib // home-manager.lib;
-    forEachSystem = f: lib.genAttrs (import systems) (system: f pkgsFor.${system});
     pkgsFor = lib.genAttrs (import systems) (
       system:
         import nixpkgs {
@@ -45,7 +50,7 @@
     nixosConfigurations = {
       thinky = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [./hosts/thinky];
+        modules = [ { nixpkgs.overlays = [nur.overlay]; } ./hosts/thinky lix-module.nixosModules.default];
 	specialArgs = {
           inherit inputs outputs;
         };

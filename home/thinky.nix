@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, config,  ...}: {
   imports = [
     ./cli.nix
     ./desktop.nix
@@ -7,6 +7,7 @@
     # ./development.nix
     # ./devops.nix
     ./games.nix
+    ./firefox.nix
   ];
 
   programs = {
@@ -15,13 +16,23 @@
   };
 
   home = {
-    username = lib.mkDefault "gulakov";
-    homeDirectory = lib.mkDefault "/home/${config.home.username}";
-    stateVersion = lib.mkDefault "23.05";
+    username = "gulakov";
+    homeDirectory = "/home/${config.home.username}";
+    stateVersion = "23.05";
   };
 
   home.packages = with pkgs; [
     comma # Install and run programs by sticking a , before them
+    
+    nixpkgs-lint
+    sqlite
+    rustup
+    ruff
+    pyright
+    typescript-language-server
+    black
+    typst
+    typst-lsp
 
     eza # Better ls
     ripgrep # Better grep
@@ -39,7 +50,6 @@
     pomodoro
     thunderbird
     alacritty
-    rust-analyzer
     vscode
     nodejs
     anki
@@ -57,5 +67,14 @@
     hunspell
     hunspellDicts.ru_RU
     hunspellDicts.de_DE
+    zathura
+    nil
+    python3
+    pulseaudio
+    pulseaudio-ctl
+    discord
+    nixfmt-classic
+    killall
+    htop
   ];
 }

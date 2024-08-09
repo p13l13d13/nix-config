@@ -14,12 +14,17 @@
   hasNeovim = config.programs.neovim.enable;
   hasEmacs = config.programs.emacs.enable;
   hasNeomutt = config.programs.neomutt.enable;
-  hasShellColor = config.programs.shellcolor.enable;
   hasKitty = config.programs.kitty.enable;
-  shellcolor = "${pkgs.shellcolord}/bin/shellcolor";
 in {
   programs.bash = {
     enable = true;
+    initExtra= ''
+    if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+    then
+      shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+      exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+    fi
+    '';
   };
 
   programs.bat = {
@@ -138,21 +143,6 @@ in {
               commandline -f up-line
           end
         '';
-      # Integrate ssh with shellcolord
-      ssh =
-        mkIf hasShellColor # fish
-        
-        ''
-          ${shellcolor} disable $fish_pid
-          # Check if kitty is available
-          if set -q KITTY_PID && set -q KITTY_WINDOW_ID && type -q -f kitty
-            kitty +kitten ssh $argv
-          else
-            command ssh $argv
-          end
-          ${shellcolor} enable $fish_pid
-          ${shellcolor} apply $fish_pid
-        '';
     };
     interactiveShellInit =
       /*
@@ -219,7 +209,7 @@ in {
     userEmail = lib.mkDefault "gulakov@protonmail.com";
     extraConfig = {
       init.defaultBranch = "main";
-      commit.gpgSign = lib.mkDefault true;
+      commit.gpgSign = lib.mkDefault false;
       gpg.program = "${config.programs.gpg.package}/bin/gpg2";
 
       merge.conflictStyle = "zdiff3";
