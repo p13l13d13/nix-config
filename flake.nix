@@ -11,6 +11,9 @@
       flake = false;
     };
 
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+
     lix-module = {
       url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +37,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nur, home-manager, systems, lix-module, lix, ... }@inputs: let
+  outputs = { self, nixos-hardware, nixpkgs, nur, home-manager, systems, lix-module, lix, ... }@inputs: let
     inherit (self) outputs;
     lib = nixpkgs.lib // home-manager.lib;
     pkgsFor = lib.genAttrs (import systems) (
@@ -55,6 +58,14 @@
           inherit inputs outputs;
         };
       };
+
+      frame = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [ { nixpkgs.overlays = [nur.overlay]; } nixos-hardware.nixosModules.framework-16-7040-amd ./hosts/frame lix-module.nixosModules.default];
+	specialArgs = {
+          inherit inputs outputs;
+        };
+      };
     };
 
     homeConfigurations = {
@@ -62,6 +73,14 @@
       # Work laptop
       "gulakov@thinky" = lib.homeManagerConfiguration {
         modules = [ ./home/thinky.nix ];
+        pkgs = pkgsFor.x86_64-linux;
+        extraSpecialArgs = {
+          inherit inputs outputs;
+        };
+      };
+
+      "gulakov@frame" = lib.homeManagerConfiguration {
+        modules = [ ./home/frame.nix ];
         pkgs = pkgsFor.x86_64-linux;
         extraSpecialArgs = {
           inherit inputs outputs;

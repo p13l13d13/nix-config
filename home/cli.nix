@@ -1,9 +1,5 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: let
+{ pkgs, lib, config, ... }:
+let
   inherit (lib) mkIf;
   packageNames = map (p: p.pname or p.name or null) config.home.packages;
   hasPackage = name: lib.any (x: x == name) packageNames;
@@ -18,12 +14,12 @@
 in {
   programs.bash = {
     enable = true;
-    initExtra= ''
-    if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-    then
-      shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-      exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-    fi
+    initExtra = ''
+      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+      then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+      fi
     '';
   };
 
@@ -32,45 +28,46 @@ in {
     config.theme = "base16";
   };
 
+  programs.neovim = {
+    defaultEditor = true;
+    enable = true;
+  };
   programs.fzf = {
     enable = true;
-    defaultOptions = ["--color 16"];
+    defaultOptions = [ "--color 16" ];
   };
 
   programs.fish = {
     enable = true;
-    plugins =
-      lib.optional hasAwsCli
-      {
-        name = "aws";
-        src = pkgs.applyPatches {
-          src = pkgs.fetchFromGitHub {
-            owner = "oh-my-fish";
-            repo = "plugin-aws";
-            rev = "e53a1de3f826916cb83f6ebd34a7356af8f754d1";
-            hash = "sha256-l17v/aJ4PkjYM8kJDA0zUo87UTsfFqq+Prei/Qq0DRA=";
-          };
-          patches = [
-            (
-              builtins.toFile "fix-complete.diff" /* diff */ ''
-                diff --git a/completions/aws.fish b/completions/aws.fish
-                index fc75188..1e8d931 100644
-                --- a/completions/aws.fish
-                +++ b/completions/aws.fish
-                @@ -1,7 +1,7 @@
-                 function __aws_complete
-                   if set -q aws_completer_path
-                     set -lx COMP_SHELL fish
-                -    set -lx COMP_LINE (commandline -opc)
-                +    set -lx COMP_LINE (commandline -pc)
-
-                     if string match -q -- "-*" (commandline -opt)
-                       set COMP_LINE $COMP_LINE -
-              ''
-            )
-          ];
+    plugins = lib.optional hasAwsCli {
+      name = "aws";
+      src = pkgs.applyPatches {
+        src = pkgs.fetchFromGitHub {
+          owner = "oh-my-fish";
+          repo = "plugin-aws";
+          rev = "e53a1de3f826916cb83f6ebd34a7356af8f754d1";
+          hash = "sha256-l17v/aJ4PkjYM8kJDA0zUo87UTsfFqq+Prei/Qq0DRA=";
         };
+        patches = [
+          (builtins.toFile "fix-complete.diff" # diff
+            ''
+              diff --git a/completions/aws.fish b/completions/aws.fish
+              index fc75188..1e8d931 100644
+              --- a/completions/aws.fish
+              +++ b/completions/aws.fish
+              @@ -1,7 +1,7 @@
+               function __aws_complete
+                 if set -q aws_completer_path
+                   set -lx COMP_SHELL fish
+              -    set -lx COMP_LINE (commandline -opc)
+              +    set -lx COMP_LINE (commandline -pc)
+
+                   if string match -q -- "-*" (commandline -opt)
+                     set COMP_LINE $COMP_LINE -
+            '')
+        ];
       };
+    };
 
     shellAbbrs = rec {
       jqless = "jq -C | less -r";
@@ -107,7 +104,8 @@ in {
       cik = mkIf hasKitty "clone-in-kitty --type os-window";
       ck = cik;
 
-      aws-switch = mkIf hasAwsCli "export AWS_PROFILE=(aws configure list-profiles | fzf)";
+      aws-switch =
+        mkIf hasAwsCli "export AWS_PROFILE=(aws configure list-profiles | fzf)";
       awssw = aws-switch;
     };
     shellAliases = {
@@ -118,13 +116,12 @@ in {
       # Disable greeting
       fish_greeting = "";
       # Grep using ripgrep and pass to nvim
-      nvimrg = mkIf (hasNeovim && hasRipgrep) "nvim -q (rg --vimgrep $argv | psub)";
+      nvimrg =
+        mkIf (hasNeovim && hasRipgrep) "nvim -q (rg --vimgrep $argv | psub)";
       # Merge history upon doing up-or-search
       # This lets multiple fish instances share history
       up-or-search =
-        /*
-        fish
-        */
+        # fish
         ''
           if commandline --search-mode
             commandline -f history-search-backward
@@ -145,9 +142,7 @@ in {
         '';
     };
     interactiveShellInit =
-      /*
-      fish
-      */
+      # fish
       ''
         # Open command buffer in vim when alt+e is pressed
         bind \ee edit_command_buffer
@@ -203,7 +198,8 @@ in {
       ff = "merge --ff-only";
       graph = "log --decorate --oneline --graph";
       pushall = "!git remote | xargs -L1 git push --all";
-      add-nowhitespace = "!git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -";
+      add-nowhitespace =
+        "!git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -";
     };
     userName = "Ivan Gulakov";
     userEmail = lib.mkDefault "gulakov@protonmail.com";
@@ -224,9 +220,6 @@ in {
       rerere.enabled = true;
     };
     lfs.enable = true;
-    ignores = [
-      ".direnv"
-      "result"
-    ];
+    ignores = [ ".direnv" "result" ];
   };
 }

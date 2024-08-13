@@ -23,7 +23,7 @@
 
   home.packages = with pkgs; [
     comma # Install and run programs by sticking a , before them
-
+    fw-ectool
     nixpkgs-lint
     sqlite
     rustup
@@ -76,5 +76,17 @@
     nixfmt-classic
     killall
     htop
+    gopls
+    yarn
+    libcap
+    go
+    libinput
+    opensnitch
+    brightnessctl
+    zellij
+    vlc
+
+    pkgs.nodePackages."bash-language-server"
+    pkgs.nodePackages."vscode-langservers-extracted"
   ];
 }

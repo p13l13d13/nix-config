@@ -1,26 +1,16 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{ pkgs, lib, ... }: {
   programs.browserpass.enable = true;
   programs.firefox = {
     enable = true;
     profiles.gabriel = {
       search = {
         force = true;
-        default = "Kagi";
+        default = "Google";
         privateDefault = "DuckDuckGo";
-        order = ["Kagi" "DuckDuckGo" "Google"];
-        engines = {
-          "Kagi" = {
-            urls = [{template = "https://kagi.com/search?q={searchTerms}";}];
-            iconUpdateURL = "https://kagi.com/favicon.ico";
-          };
-          "Bing".metaData.hidden = true;
-        };
+        order = [ "Google" ];
+        engines = { "Bing".metaData.hidden = true; };
       };
-      bookmarks = {};
+      bookmarks = { };
       extensions = with pkgs.nur.repos.rycee.firefox-addons; [
         ublock-origin
         vimium
@@ -30,7 +20,7 @@
         tampermonkey
         decentraleyes
       ];
-      bookmarks = {};
+      bookmarks = { };
       settings = {
         "browser.startup.homepage" = "about:home";
 
@@ -55,7 +45,8 @@
         # Disable crappy home activity stream page
         "browser.newtabpage.activity-stream.feeds.topsites" = false;
         "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
-        "browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts" = false;
+        "browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts" =
+          false;
         "browser.newtabpage.blocked" = lib.genAttrs [
           # Youtube
           "26UbzFJ7qT9/4DhodHKA1Q=="
@@ -108,25 +99,47 @@
         "browser.uiCustomization.state" = builtins.toJSON {
           currentVersion = 20;
           newElementCount = 5;
-          dirtyAreaCache = ["nav-bar" "PersonalToolbar" "toolbar-menubar" "TabsToolbar" "widget-overflow-fixed-list"];
+          dirtyAreaCache = [
+            "nav-bar"
+            "PersonalToolbar"
+            "toolbar-menubar"
+            "TabsToolbar"
+            "widget-overflow-fixed-list"
+          ];
           placements = {
-            PersonalToolbar = ["personal-bookmarks"];
-            TabsToolbar = ["tabbrowser-tabs" "new-tab-button" "alltabs-button"];
-            nav-bar = ["back-button" "forward-button" "stop-reload-button" "urlbar-container" "downloads-button" "ublock0_raymondhill_net-browser-action" "_testpilot-containers-browser-action" "reset-pbm-toolbar-button" "unified-extensions-button"];
-            toolbar-menubar = ["menubar-items"];
-            unified-extensions-area = [];
-            widget-overflow-fixed-list = [];
+            PersonalToolbar = [ "personal-bookmarks" ];
+            TabsToolbar =
+              [ "tabbrowser-tabs" "new-tab-button" "alltabs-button" ];
+            nav-bar = [
+              "back-button"
+              "forward-button"
+              "stop-reload-button"
+              "urlbar-container"
+              "downloads-button"
+              "ublock0_raymondhill_net-browser-action"
+              "_testpilot-containers-browser-action"
+              "reset-pbm-toolbar-button"
+              "unified-extensions-button"
+            ];
+            toolbar-menubar = [ "menubar-items" ];
+            unified-extensions-area = [ ];
+            widget-overflow-fixed-list = [ ];
           };
-          seen = ["save-to-pocket-button" "developer-button" "ublock0_raymondhill_net-browser-action" "_testpilot-containers-browser-action"];
+          seen = [
+            "save-to-pocket-button"
+            "developer-button"
+            "ublock0_raymondhill_net-browser-action"
+            "_testpilot-containers-browser-action"
+          ];
         };
       };
     };
   };
 
   xdg.mimeApps.defaultApplications = {
-    "text/html" = ["firefox.desktop"];
-    "text/xml" = ["firefox.desktop"];
-    "x-scheme-handler/http" = ["firefox.desktop"];
-    "x-scheme-handler/https" = ["firefox.desktop"];
+    "text/html" = [ "firefox.desktop" ];
+    "text/xml" = [ "firefox.desktop" ];
+    "x-scheme-handler/http" = [ "firefox.desktop" ];
+    "x-scheme-handler/https" = [ "firefox.desktop" ];
   };
 }
