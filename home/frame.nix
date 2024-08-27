@@ -32,7 +32,6 @@
     typescript-language-server
     black
     typst
-    typst-lsp
 
     eza # Better ls
     ripgrep # Better grep
@@ -85,6 +84,9 @@
     brightnessctl
     zellij
     vlc
+    obsidian
+    pciutils
+    lm_sensors
 
     pkgs.nodePackages."bash-language-server"
     pkgs.nodePackages."vscode-langservers-extracted"

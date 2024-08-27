@@ -42,7 +42,7 @@
   };
   services.xserver = {
       enable = true;
-      videoDrivers = [ "amdgpu" ];
+      videoDrivers = [ "amdgpu" "nvidia"];
       desktopManager.xterm.enable = false;
       desktopManager.gnome = {
         enable = true;
@@ -60,11 +60,23 @@ Type=Application''
       };
     })
     )
+    ((
+			pkgs.writeTextDir "share/wayland-sessions/hyprland.desktop" ''[Desktop Entry]
+Name=Hyprland
+Comment=Hyprland run from a login shell
+Exec=${pkgs.dbus}/bin/dbus-run-session -- bash -l -c hyprland
+Type=Application''
+    ).overrideAttrs (oldAttrs: {
+      passthru = {
+        providedSessions = ["hyprland"];
+      };
+    })
+    )
   ];
     displayManager.gdm = {
         enable = true;
       };
-    displayManager.defaultSession = "gnome";
+    displayManager.defaultSession = "sway";
   };
 
   services.thermald.enable = true;

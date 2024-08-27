@@ -44,6 +44,7 @@
       system:
         import nixpkgs {
           inherit system;
+          config.nvidia.acceptLicense = true;
           config.allowUnfree = true;
         }
     );
