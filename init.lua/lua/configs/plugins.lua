@@ -23,7 +23,6 @@ require("lazy").setup({
   spec = {
     'wbthomason/packer.nvim',
      'rbgrouleff/bclose.vim',
-    'kevinhwang91/rnvimr',
     -- Some improvements to neovim UI
      {'stevearc/dressing.nvim'},
      'simrat39/rust-tools.nvim',
@@ -47,7 +46,8 @@ require("lazy").setup({
       'nvim-telescope/telescope.nvim',
       requires = { {'nvim-lua/plenary.nvim'} }
     },
-
+    -- Better terminals, could be toggled + better positions
+  {'akinsho/toggleterm.nvim', version = "*", config = true},
      {
       'lewis6991/gitsigns.nvim',
       config = function()

@@ -11,8 +11,7 @@ local lsp_attach = function(client, bufnr)
   vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
   vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
   vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-  vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-  vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+  vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts) vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
   vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
 end
 
@@ -34,7 +33,16 @@ cmp.setup({
       vim.snippet.expand(args.body)
     end,
   },
-  mapping = cmp.mapping.preset.insert({}),
+  mapping = cmp.mapping.preset.insert({
+    ['<Tab>'] = {
+      i = cmp.mapping.select_next_item()
+    },
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  })
 })
 
 require'lspconfig'.rust_analyzer.setup{
@@ -50,6 +58,7 @@ require'lspconfig'.rust_analyzer.setup{
   end
 }
 
+require'lspconfig'.ts_ls.setup{}
 require'lspconfig'.nil_ls.setup{}
 require'lspconfig'.bashls.setup{}
 require'lspconfig'.clangd.setup{}
@@ -61,4 +70,5 @@ require'lspconfig'.eslint.setup({
     })
   end,
 })
+require'lspconfig'.pyright.setup{}
 require'lspconfig'.gopls.setup{}

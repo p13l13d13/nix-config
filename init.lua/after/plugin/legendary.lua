@@ -3,10 +3,8 @@ local directions = require('hop.hint').HintDirection
 local builtin = require('telescope.builtin')
 
 require('legendary').setup({
+  extensions = { lazy_nvim = true },
   keymaps = {
-    -- map keys to a command
-    { '<leader>ff', ':Telescope find_files', description = 'Find files' },
-
     -- HOP mappings
         { 'f',
           function()
@@ -71,6 +69,11 @@ require('legendary').setup({
 
         -- Telescope mappings
         {
+          '<leader>fr',
+          builtin.resume,
+          description = 'telescope open last picker',
+        },
+        {
           '<leader>ff',
           builtin.find_files,
           description = 'telescope find files',
@@ -108,16 +111,9 @@ require('legendary').setup({
 
         -- undotree mappings
         {
-          '<leader>fs',
+          '<leader>tu',
           { n = '<Cmd>UndotreeToggle<CR>' },
           description = 'toggle undotree',
-        },
-
-        -- ranger mappings
-        {
-          '<leader>r',
-          { n = "<Cmd>RnvimrToggle<CR>" },
-          description = 'toggle ranger'
         },
 
         -- LSP mappings
@@ -158,7 +154,6 @@ require('legendary').setup({
           { n = vim.lsp.buf.rename },
           description = 'rename symbol under cursor'
         },
-        -- TODO: Add nvim-dap mappings
         -- TODO: Add harpoon mappings  
         -- TODO: Add more lsp mappings
         -- TODO: Add terminal mapping
